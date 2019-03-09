@@ -1,0 +1,50 @@
+.table-moodle > thead{
+	background-color: #6a4f93;
+	color: #FFF;
+}
+
+.table-moodle > thead > tr > th{
+	color: #FFF;
+}
+
+.table-moodle > tbody > tr {
+	background-color: #FFF;
+}
+
+.tabla-acciones{
+	background-color: #BEAED6;
+}
+
+.btn-moodle{
+	color: #fff;
+    background-color: #41a18f;
+    border-color: #378879;
+}
+
+.btn-moodle:hover{
+	color: #fff;
+    background-color: #37897a;
+    font-weight: bold;
+    border-color: #2bbc60;	
+}
+
+.btn-moodle:active{
+	color: #fff;
+    background-color: #37897a;
+    border-color: #2bbc60;	
+}
+
+.btn-moodle:focus{
+	color: #fff;
+    background-color: #37897a;
+    border-color: #2bbc60;	
+}
+
+.panel-bienvenida{
+	border-style: solid;
+    border-width: 1px;
+    border-color: #d6cad7;
+    margin-bottom: 1.25rem;
+    padding: 1.25rem;
+    background: #F0E9F0;
+}

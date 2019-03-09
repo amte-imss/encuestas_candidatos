@@ -1,0 +1,30 @@
+.datos_generales{
+	background-color: #00796b; 	
+}
+
+.span-data-general{
+	color: #b2dfdb !important;
+}
+
+.title-white{
+	color: #ffffff !important;
+	padding-top: 15px;
+}
+
+.info-datos{
+	background-color: #009688; 
+}
+
+.text-black{
+	color: #212121; 
+}
+
+.full-left{
+	width: 100% !important;
+}
+.copyright{
+	background: #343642 none repeat scroll 0 0;
+	color: #FFF;
+	padding: 20px;
+	text-align: center;
+}
