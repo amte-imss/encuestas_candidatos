@@ -33,6 +33,13 @@ $(document).ready(function () {
     }
 });
 
+function formato_fecha(fecha) {
+    var fechaTmp = new Date(fecha);
+    var options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric"};
+//    return  fechaTmp.toLocaleDateString("es-ES", options);
+    return  fechaTmp.toLocaleTimeString("es-ES", options);
+}
+
 function grid_reporte_encuestas(curso) {
     var name_fields = obtener_cabeceras_encuestas();
     grid = $('#jsReporteEncuestas').jsGrid({
@@ -82,10 +89,19 @@ function grid_reporte_encuestas(curso) {
                         .done(function (result) {
 
                             var res = $.grep(result.data, function (registro) {
+                                console.log(registro.calificacion);
                                 if (registro.contestada == 2 && (registro.calificacion != null && registro.calificacion.toString().length > 0)) {
-//                                console.log(registro.contestada);
+                                    var evtmp = registro.calificacion.split(",", 3);
+                                    if (evtmp.length > 2) {//Es un array con la informacion de calificacion para bono 
+                                        registro.calificacion_bono = evtmp[1];
+                                        registro.fecha_evaluacion = formato_fecha(evtmp[2]);
+                                        registro.calificacion = evtmp[0];
+                                    }
+//                                    console.log(evtmp);
 //                                console.log(registro.calificacion.toString().length);
                                     registro.contestada = 1;
+                                } else if (registro.contestada == 1 && (registro.calificacion != null && registro.calificacion.toString().length > 0)) {
+                                    registro.fecha_evaluacion = formato_fecha(registro.fecha_evaluacion);
                                 } else if (registro.contestada == 2) {
                                     registro.calificacion = null;
                                 }
@@ -126,6 +142,7 @@ function grid_reporte_encuestas(curso) {
                                         && (!filter.nombre_evaluado || (registro.nombre_evaluado !== null && registro.nombre_evaluado.toLowerCase().indexOf(filter.nombre_evaluado.toString().toLowerCase()) > -1))
                                         && (!filter.calif_emitida_napb || (registro.calif_emitida_napb !== null && registro.calif_emitida_napb.indexOf(filter.nombre_evaluado.toString()) > -1))
                                         && (!filter.calif_emitida || (registro.calif_emitida !== null && registro.calif_emitida.indexOf(filter.calif_emitida.toString()) > -1))
+                                        && (!filter.fecha_evaluacion || (registro.fecha_evaluacion !== null && registro.fecha_evaluacion.indexOf(filter.fecha_evaluacion.toString()) > -1))
                                         ;
                             });
 //                            d.resolve(result['data']);
@@ -163,6 +180,7 @@ function grid_reporte_encuestas(curso) {
             {name: "region_evaluado", title: name_fields.region_evaluado, type: "text", inserting: false, editing: false},
             {name: "calificacion", title: name_fields.calificacion, type: "text", inserting: false, editing: false},
             {name: "calificacion_bono", title: name_fields.calificacion_bono, type: "text", inserting: false, editing: false},
+            {name: "fecha_evaluacion", title: name_fields.fecha_evaluacion, type: "text", inserting: false, editing: false},
             {type: "control", editButton: false, deleteButton: false,
                 searchModeButtonTooltip: "Cambiar a modo búsqueda", // tooltip of switching filtering/inserting button in inserting mode
                 editButtonTooltip: "Editar", // tooltip of edit item button
@@ -560,7 +578,8 @@ function obtener_cabeceras_encuestas() {
 //        email_tutor_evaluador: 'Correo electrónico del evaluador'
         contestada: 'Encuesta contestada y no contestada',
         calificacion: 'Calificación',
-        calificacion_bono: 'Calificación para bono'
+        calificacion_bono: 'Calificación para bono',
+        fecha_evaluacion: 'Fecha de evaluación'
     }
 
     return arr_header;

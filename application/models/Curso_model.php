@@ -111,8 +111,13 @@ class Curso_model extends CI_Model {
             'mdl_course_config.tipocur',
             'mdl_course_config.startdatepre',
             'mdl_course_config.tutorizado',
-            '(mdl_course.id in (select course_cve  from encuestas.sse_curso_bloque_grupo as tmp_c_c where tmp_c_c.course_cve = mdl_course.id)) en_bloque'
-                //'mdl_course_config.curso_alcance'
+            '(mdl_course.id in (select course_cve  from encuestas.sse_curso_bloque_grupo as tmp_c_c where tmp_c_c.course_cve = mdl_course.id)) en_bloque',
+               '(select string_agg( e.cve_corta_encuesta, \', \') from encuestas.sse_encuesta_curso ec 
+                join encuestas.sse_encuestas e on e.encuesta_cve = ec.encuesta_cve and ec.course_cve = mdl_course.id) clave_encuestas', 
+            '(mdl_course.id in (select course_cve  from encuestas.sse_curso_bloque_grupo as tmp_c_c where tmp_c_c.course_cve = mdl_course.id)) en_bloque',
+               '(select string_agg(concat(e.cve_corta_encuesta, \' \',e.descripcion_encuestas), \', \') from encuestas.sse_encuesta_curso ec 
+                join encuestas.sse_encuestas e on e.encuesta_cve = ec.encuesta_cve and ec.course_cve = mdl_course.id) encuestas_des' 
+               //'mdl_course_config.curso_alcance'
         );
 
         /*

@@ -528,4 +528,4 @@ $config['proxy_ips'] = '';
 //$config['session_moodle_path'] = '/datas/data_clean/sessions';
 //$config['session_moodle_path'] = './moodledata3/sessions';
 //$config['session_moodle_path'] = 'C:\Users\Claudia\IMSS_repos\encuestas\sessions';
-$config['session_moodle_path'] ='C:\xampp\htdocs\imss\encuestas\sessions';
+$config['session_moodle_path'] ='C:\xampp\htdocs\imss\encuestas_candidatos\sessions';   

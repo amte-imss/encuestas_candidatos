@@ -20,6 +20,7 @@ $check_no = '<h4><span class="glyphicon glyphicon-remove" aria-hidden="true" sty
                     <!--<th>Modalidad</th>-->
                     <th>Tutorizado</th>
                     <th>Bloques</th>
+                    <th>Encuestas</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -50,7 +51,8 @@ $check_no = '<h4><span class="glyphicon glyphicon-remove" aria-hidden="true" sty
                     <td >' . $val['cur_nom_completo'].'</td > 
                     <td >' . $val['anio'] . '</td>
                     <td >' . $val['horascur']. '</td > 
-                    <td >' . ((isset($val['tutorizado']) && $val['tutorizado'] == '1') ? $check_ok : $check_no) . '</td ><td>';
+                    <td >' . ((isset($val['tutorizado']) && $val['tutorizado'] == '1') ? $check_ok : $check_no) . '</td ><td>'
+                            ;
                     if($val['tutorizado'] == '1' && $val['en_bloque'] == 1){
                         echo 'Asignados';
                     }else if($val['tutorizado'] == '1' && $val['en_bloque'] == 0){
@@ -58,6 +60,8 @@ $check_no = '<h4><span class="glyphicon glyphicon-remove" aria-hidden="true" sty
                     }else{
                         echo 'NA';
                     }
+                    echo '<td ><span class="input-sm" data-placement="left" data-toggle="tooltip" title   data-original-title="'.$val['encuestas_des'].'">'. $val['clave_encuestas']. '</span></td >';
+//                    echo '<td ><span data-placement="left" data-toggle="popover" title  data-trigger="click hover" data-content="'.$val['encuestas_des'].'">'. $val['clave_encuestas']. '</span></td >';
                     echo '</td><td>
                         <a href="'.site_url('curso/info_curso/'.$val['cur_id']).'" class="btn btn-info btn-block">
                             <span class="glyphicon glyphicon-search"></span>
@@ -69,7 +73,7 @@ $check_no = '<h4><span class="glyphicon glyphicon-remove" aria-hidden="true" sty
                 }
                 
                 ?>
-            </tbody>
+            </tbody >
         </table>
         
     </div>
@@ -80,3 +84,12 @@ $check_no = '<h4><span class="glyphicon glyphicon-remove" aria-hidden="true" sty
     </div>
 
 <?php } ?>
+    
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip(); 
+//  $('[data-toggle="popover"]').popover(); 
+});
+//$(document).ready(function(){
+//});
+</script>
