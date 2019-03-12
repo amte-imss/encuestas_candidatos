@@ -31,7 +31,7 @@ class Curso extends MY_Controller {
     public function index() {
 
 
-        $anios = $this->lista_anios(2009, date('Y'));
+        $anios = $this->lista_anios(2009, date('Y'), FALSE);
         $rol = $this->config->item('rol_docente');
         //$data['categoria']=dropdown_options($categoria, 'cve_categoria','nom_nombre');
         //$data['adscripcion']=dropdown_options($adscripcion, '','');
@@ -185,10 +185,16 @@ class Curso extends MY_Controller {
             </script>';
     }
 
-    public function lista_anios($anio_inicio, $anio_fin) {
+    public function lista_anios($anio_inicio, $anio_fin, $asc = true) {
         $anios = array();
-        for ($anio = $anio_inicio; $anio <= $anio_fin; $anio++) {
-            $anios[] = array('anio_id' => $anio, 'anio_desc' => $anio);
+        if ($asc) {
+            for ($anio = $anio_inicio; $anio <= $anio_fin; $anio++) {
+                $anios[] = array('anio_id' => $anio, 'anio_desc' => $anio);
+            }
+        }else{
+            for ($anio = $anio_fin; $anio >= $anio_inicio; $anio--) {
+                $anios[] = array('anio_id' => $anio, 'anio_desc' => $anio);
+            }
         }
         //pr($anios);
         return $anios;
@@ -201,7 +207,6 @@ class Curso extends MY_Controller {
 //        $data['grupos'] = $this->cur_mod->listar_grupos_curso(array('cur_id' => $curso));
         $data += $this->cur_mod->getGruposBloques(array('vdc.idc' => $curso));
 //        $data['modulos'] = $this->get_modulos_habilitados();
-
 //        pr($data); exit();
 
         $main_contet = $this->load->view('curso/info_curso', $data, true);

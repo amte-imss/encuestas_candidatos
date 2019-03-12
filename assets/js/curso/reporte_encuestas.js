@@ -119,6 +119,7 @@ function grid_reporte_encuestas(curso) {
 //                                }
 
                                 return (!filter.contestada || (registro.contestada != null && (registro.contestada == filter.contestada)))
+                                        && (!filter.encuesta_valida || (registro.encuesta_valida != null && (registro.encuesta_valida == filter.encuesta_valida)))    
                                         && (!filter.descripcion_encuestas || (registro.descripcion_encuestas !== null && registro.descripcion_encuestas.toLowerCase().indexOf(filter.descripcion_encuestas.toString().toLowerCase()) > -1))
                                         && (!filter.rol_evaluador || (registro.rol_evaluador !== null && registro.rol_evaluador.toLowerCase().indexOf(filter.rol_evaluador.toString().toLowerCase()) > -1))
                                         && (!filter.matricula_evaluador || (registro.matricula_evaluador !== null && registro.matricula_evaluador.toLowerCase().indexOf(filter.matricula_evaluador.toString().toLowerCase()) > -1))
@@ -157,6 +158,7 @@ function grid_reporte_encuestas(curso) {
         },
         fields: [
             {name: "contestada", title: name_fields.contestada, type: "select", items: {0: 'Seleccionar', 2: "No contestada", 1: "Contestada"}, inserting: false, editing: false},
+            {name: "encuesta_valida", title: name_fields.encuesta_valida, type: "select", items: {0: 'Seleccionar', 1: "Valida", 2: "No valida"}, inserting: false, editing: false},
             {name: "descripcion_encuestas", title: name_fields.descripcion_encuestas, type: "text", inserting: false, editing: false},
             {name: "names_grupos", title: name_fields.names_grupos, type: "text", inserting: false, editing: false},
             {name: "bloque", title: name_fields.bloque, type: "text", inserting: false, editing: false},
@@ -579,7 +581,8 @@ function obtener_cabeceras_encuestas() {
         contestada: 'Encuesta contestada y no contestada',
         calificacion: 'Calificación',
         calificacion_bono: 'Calificación para bono',
-        fecha_evaluacion: 'Fecha de evaluación'
+        fecha_evaluacion: 'Fecha de evaluación',
+        encuesta_valida: 'Encuesta valida'
     }
 
     return arr_header;

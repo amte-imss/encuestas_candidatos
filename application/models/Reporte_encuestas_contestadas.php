@@ -4,11 +4,27 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Reporte_encuestas_contestadas extends CI_Model {
 
+    private $filtrar_encuestas_validas = false;
+    private $obtener_encuestas_validas = true;
+
     public function __construct() {
         // Call the CI_Model constructor
         parent::__construct();
         $this->config->load('general');
         $this->load->database();
+    }
+
+    /**
+     * 
+     * @param type $filtrar_encuestas_validas
+     * En true aplica el filtro de encuestas validas, ya que algunas no aplicasn 
+     */
+    function setFiltrar_encuestas_validas($filtrar_encuestas_validas) {
+        $this->filtrar_encuestas_validas = $filtrar_encuestas_validas;
+    }
+
+    function setObtener_encuestas_validas($obtener_encuestas_validas) {
+        $this->obtener_encuestas_validas = $obtener_encuestas_validas;
     }
 
     /**
@@ -167,7 +183,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
      * @return type
      */
     private function get_select_NC_N_T() {//Select basico tutorizado no contestadas con normativo
-        return[
+        $array = [
             //tutorizado
             'mdl_course_config"."tutorizado',
 //curso
@@ -196,8 +212,11 @@ class Reporte_encuestas_contestadas extends CI_Model {
             , "'' calificacion"
             , "'' calificacion_bono"
             , "'' fecha_evaluacion"
-            
         ];
+        if ($this->obtener_encuestas_validas) {
+            $array[] = $this->get_select_encuesta_valida();
+        }
+        return $array;
     }
 
     private function get_from_NC_N_T() {//Select basico tutorizado no contestadas con normativo
@@ -217,6 +236,9 @@ class Reporte_encuestas_contestadas extends CI_Model {
                 join encuestas.sse_curso_bloque_grupo cbgp on cbgp.course_cve = reecp.course_cve and cbgp.bloque = "cbg".bloque  
                 where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id"
                 ) = 0', null);
+        if ($this->filtrar_encuestas_validas) {//Aplica filtro para descartar las encuestas que no son validas
+            $this->db->where($this->get_where_encuesta_valida());
+        }
     }
 
     private function get_join_NC_N_T() {//Select basico tutorizado no contestadas con normativo
@@ -251,7 +273,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
     /*     * ***** Reporte de encuestas para cursos tutorizados y encuestas no contestadas sin  normativo ********* */
 
     private function get_select_NC_SN_T() {//Select basico tutorizado no contestadas sin normativo
-        return[
+        $array = [
             //tutorizado
             'mdl_course_config"."tutorizado',
 //curso
@@ -270,11 +292,11 @@ class Reporte_encuestas_contestadas extends CI_Model {
             'concat("mdl_user"."firstname", \' \', "mdl_user"."lastname") as nombre_evaluador'
             , '"catdor".des_clave clave_categoria_evaluador_preg', '"catdor".nom_nombre nombre_categoria_evaluado_preg',
             'deppredor.cve_depto_adscripcion clave_adscripcion_preg_evaluador', 'deppredor.des_unidad_atencion nombre_adscripcion_preg_evaluador'
-            , 'deppredor"."nom_delegacion" "delegacion_preg_evaluador', 'deppredor"."name_region" "region_preg_evaluador', 
+            , 'deppredor"."nom_delegacion" "delegacion_preg_evaluador', 'deppredor"."name_region" "region_preg_evaluador',
             'string_agg(DISTINCT "gpregdor".des_email_pers, \', \') "email_preg_evaluador"',
             '"cattutdor".des_clave clave_categoria_evaluador_tutor', '"cattutdor".nom_nombre nombre_categoria_evaluado_tutor',
             'depdor.cve_depto_adscripcion clave_adscripcion_tutor_evaluador', 'depdor.des_unidad_atencion nombre_adscripcion_tutor_evaluador',
-            'depdor"."nom_delegacion" "delegacion_tutor_evaluador', 'depdor"."name_region" "region_tutor_evaluador_dor', 
+            'depdor"."nom_delegacion" "delegacion_tutor_evaluador', 'depdor"."name_region" "region_tutor_evaluador_dor',
             'string_agg(DISTINCT (case "tutdor".emailpart when \'\' then "tutdor".emaillab else "tutdor".emailpart end), \', \') as "email_tutor_evaluador"'
 //contestadas
             , "2 contestada"
@@ -282,6 +304,10 @@ class Reporte_encuestas_contestadas extends CI_Model {
             , "'' calificacion_bono"
             , "'' fecha_evaluacion"
         ];
+        if ($this->obtener_encuestas_validas) {
+            $array[] = $this->get_select_encuesta_valida();
+        }
+        return $array;
     }
 
     private function get_from_NC_SN_T() {//Select basico tutorizado no contestadas sin normativo
@@ -301,6 +327,9 @@ class Reporte_encuestas_contestadas extends CI_Model {
                 join encuestas.sse_curso_bloque_grupo cbgp on cbgp.course_cve = reecp.course_cve and cbgp.bloque = "cbg".bloque  
                 where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id"
                 )=0', null);
+        if ($this->filtrar_encuestas_validas) {//Aplica filtro para descartar las encuestas que no son validas
+            $this->db->where($this->get_where_encuesta_valida());
+        }
     }
 
     private function get_join_NC_SN_T() {//Select basico tutorizado no contestadas con normativo
@@ -342,12 +371,12 @@ class Reporte_encuestas_contestadas extends CI_Model {
             'encuestas"."sse_encuestas"."encuesta_cve', 'encuestas"."sse_encuestas"."cve_corta_encuesta', 'encuestas"."sse_encuestas"."descripcion_encuestas'
 //evaluado
             , 'mdl_user_evaluado"."username', 'mdl_rol_evaluado"."id', 'mdl_rol_evaluado"."name'
-            , '"mdl_user_evaluado".firstname', 'mdl_user_evaluado"."lastname'
+            , '"mdl_user_evaluado".firstname', 'mdl_user_evaluado"."lastname', '"mdl_user_evaluado"."id"'
             , '"cattutdo".des_clave', '"cattutdo".nom_nombre',
             'depdo.cve_depto_adscripcion', '"depdo".des_unidad_atencion',
             'depdo"."nom_delegacion', 'depdo"."name_region'
 //evaluador 
-            ,'"mdl_user"."id"', 'mdl_user"."username', 'mdl_role"."id', 'mdl_role"."name',
+            , '"mdl_user"."id"', 'mdl_user"."username', 'mdl_role"."id', 'mdl_role"."name',
             'mdl_user"."firstname', 'mdl_user"."lastname'
             , '"catdor".des_clave', '"catdor".nom_nombre',
             'deppredor.cve_depto_adscripcion', 'deppredor.des_unidad_atencion'
@@ -380,11 +409,11 @@ class Reporte_encuestas_contestadas extends CI_Model {
             "depdo.nom_delegacion delegacion_evaluado",
             "depdo.name_region region_evaluado",
             //EVALUADOR
-            'uedor.id id_user_evaluador',"uedor.username as matricula_evaluador", "mrdor.id rol_evaluador_id", "mrdor.name rol_evaluador",
+            'uedor.id id_user_evaluador', "uedor.username as matricula_evaluador", "mrdor.id rol_evaluador_id", "mrdor.name rol_evaluador",
             "concat(uedor.firstname, ' ', uedor.lastname) nombre_evaluador",
             "catpredor.des_clave clave_categoria_evaluador_preg", "catpredor.nom_nombre nombre_categoria_evaluado_preg",
             "deppredor.cve_depto_adscripcion clave_adscripcion_preg_evaluador", "deppredor.des_unidad_atencion nombre_adscripcion_preg_evaluador",
-            "deppredor.nom_delegacion delegacion_preg_evaluador", "deppredor.name_region region_preg_evaluador", 
+            "deppredor.nom_delegacion delegacion_preg_evaluador", "deppredor.name_region region_preg_evaluador",
             'string_agg(DISTINCT ("gpregdor"."des_email_pers"), \', \') email_preg_evaluador',
             "cattutdor.des_clave clave_categoria_evaluador_tutor", "cattutdor.nom_nombre nombre_categoria_evaluado_tutor",
             "depdor.cve_depto_adscripcion clave_adscripcion_tutor_evaluador", "depdor.des_unidad_atencion nombre_adscripcion_tutor_evaluador"
@@ -396,10 +425,10 @@ class Reporte_encuestas_contestadas extends CI_Model {
             "reec.calif_emitida calificacion_bono",
             "reec.fecha_add fecha_evaluacion"
         );
-//        $result = implode ($array);
-//       pr($result);
+        if ($this->obtener_encuestas_validas) {
+            $array[] = $this->get_select_encuesta_valida(true);
+        }
         return $array;
-        
     }
 
     private function get_from_C_T() {//Select basico tutorizado
@@ -410,6 +439,9 @@ class Reporte_encuestas_contestadas extends CI_Model {
         $this->db->where('ccfg.tutorizado', 1);
         if (!is_null($curso_id)) {
             $this->db->where('ec.course_cve', $curso_id);
+        }
+        if ($this->filtrar_encuestas_validas) {//Aplica filtro para descartar las encuestas que no son validas
+            $this->db->where($this->get_where_encuesta_valida(true));
         }
     }
 
@@ -440,8 +472,9 @@ class Reporte_encuestas_contestadas extends CI_Model {
         $group = [
             "ec.course_cve", "mcs.shortname", "mcs.fullname", "ccfg.tutorizado", "reec.encuesta_cve", "reec.evaluador_user_cve",
             "reec.evaluado_user_cve", "enc.cve_corta_encuesta", "enc.descripcion_encuestas", "mrdo.id, mrdo.name",
-            "uedor.id", "uedo.username",
-            "uedo.firstname", "uedo.lastname", "depdo.cve_depto_adscripcion", "depdo.des_unidad_atencion", "depdo.nom_delegacion",
+            "uedor.id", 
+            "uedo.id","uedo.username", "uedo.firstname", "uedo.lastname", "depdo.cve_depto_adscripcion", 
+            "depdo.des_unidad_atencion", "depdo.nom_delegacion",
             "depdo.name_region", "cattutdor.des_clave", "cattutdor.nom_nombre", "mrdor.id, mrdor.name", "uedor.username", "uedor.firstname",
             "uedor.lastname", "cattutdor.des_clave", "cattutdor.nom_nombre", "catpredor.des_clave", "catpredor.nom_nombre", "depdor.cve_depto_adscripcion",
             "depdor.des_unidad_atencion", "depdor.nom_delegacion", "depdor.name_region", "deppredor.cve_depto_adscripcion",
@@ -459,7 +492,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
      * Selecet Reporte cursos no tutorizados CyNC (contestadas y no contestadas)  sin normativo (SN-Normativo) 
      */
     private function get_select_CNC_SN_NT() {//Select basico no tutorizado sin normativo
-        return array(
+        $array =  array(
             //tutorizado
             'mdl_course_config"."tutorizado',
             //curso
@@ -491,16 +524,20 @@ class Reporte_encuestas_contestadas extends CI_Model {
                 join encuestas.sse_result_evaluacion_encuesta_curso reecp on reecp.encuesta_cve = encp.encuesta_cve and (reecp.group_id = "gm"."groupid" ) AND encp.encuesta_cve = "sse_encuesta_curso"."encuesta_cve" AND reecp.course_cve ="encuestas"."sse_encuesta_curso"."course_cve" 
                 where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id" 
                 ) as calificacion'
-            /*, '(select reecp.calif_emitida
-                from encuestas.sse_encuestas encp
-                join encuestas.sse_reglas_evaluacion regep on  regep.reglas_evaluacion_cve = encp.reglas_evaluacion_cve and regep.rol_evaluador_cve = "mdl_role"."id" and regep.rol_evaluado_cve = "mdl_rol_evaluado"."id"
-                join encuestas.sse_result_evaluacion_encuesta_curso reecp on reecp.encuesta_cve = encp.encuesta_cve and (reecp.group_id = "gm"."groupid" ) AND encp.encuesta_cve = "sse_encuesta_curso"."encuesta_cve" AND reecp.course_cve ="encuestas"."sse_encuesta_curso"."course_cve" 
-                where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id" 
-                ) as calificacion_bono'*/
+            /* , '(select reecp.calif_emitida
+              from encuestas.sse_encuestas encp
+              join encuestas.sse_reglas_evaluacion regep on  regep.reglas_evaluacion_cve = encp.reglas_evaluacion_cve and regep.rol_evaluador_cve = "mdl_role"."id" and regep.rol_evaluado_cve = "mdl_rol_evaluado"."id"
+              join encuestas.sse_result_evaluacion_encuesta_curso reecp on reecp.encuesta_cve = encp.encuesta_cve and (reecp.group_id = "gm"."groupid" ) AND encp.encuesta_cve = "sse_encuesta_curso"."encuesta_cve" AND reecp.course_cve ="encuestas"."sse_encuesta_curso"."course_cve"
+              where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id"
+              ) as calificacion_bono' */
             , "'' calificacion_bono"
             , "'No aplica' as bloque"
             , "'' fecha_evaluacion"
         );
+        if ($this->obtener_encuestas_validas) {
+            $array[] = $this->get_select_encuesta_valida();
+        }
+        return $array;
     }
 
     private function get_from_CNC_SN_NT() {//Select basico no tutorizado sin normativo
@@ -513,6 +550,9 @@ class Reporte_encuestas_contestadas extends CI_Model {
         }
         $this->db->where('"mdl_course_config".tutorizado', '0');
         $this->db->where_not_in('"encuestas"."sse_reglas_evaluacion"."reglas_evaluacion_cve"', 14);
+        if ($this->filtrar_encuestas_validas) {//Aplica filtro para descartar las encuestas que no son validas
+            $this->db->where($this->get_where_encuesta_valida());
+        }
     }
 
     private function get_join_CNC_SN_NT() {//Select basico tutorizado
@@ -551,7 +591,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
     /*     * * Reporte cursos no tutorizados CyNC (contestadas y no contetadas) - para Normativo .sql **** *********** */
 
     private function get_select_CNC_N_NT() {//Select basico no tutorizado con normativo
-        return array(
+        $array = array(
             //tutorizado
             'mdl_course_config"."tutorizado',
             //curso
@@ -560,7 +600,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
             //Encuesta
             'encuestas"."sse_encuestas"."encuesta_cve', 'encuestas"."sse_encuestas"."cve_corta_encuesta', 'encuestas"."sse_encuestas"."descripcion_encuestas'
             //evaluado
-            ,  '"mdl_user_evaluado"."username" as matricula_evaluado', '"mdl_rol_evaluado"."id" as rol_evaluado_id', '"mdl_rol_evaluado"."name" as rol_evaluando'
+            , '"mdl_user_evaluado"."username" as matricula_evaluado', '"mdl_rol_evaluado"."id" as rol_evaluado_id', '"mdl_rol_evaluado"."name" as rol_evaluando'
             , 'concat("mdl_user_evaluado".firstname, \' \', "mdl_user_evaluado"."lastname") as nombre_evaluado'
             , '"cattutdo".des_clave clave_categoria_evaluado', '"cattutdo".nom_nombre nombre_categoria_evaluado',
             'depdo.cve_depto_adscripcion clave_adscripcion_evaluado', '"depdo".des_unidad_atencion nombre_adscripcion_evaluado',
@@ -583,16 +623,20 @@ class Reporte_encuestas_contestadas extends CI_Model {
                 join encuestas.sse_result_evaluacion_encuesta_curso reecp on reecp.encuesta_cve = encp.encuesta_cve and (reecp.group_id =0) AND encp.encuesta_cve = "sse_encuesta_curso"."encuesta_cve" AND reecp.course_cve ="encuestas"."sse_encuesta_curso"."course_cve" 
                 where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id" 
                 ) as calificacion'
-            /*, '(select reecp.calif_emitida
-                from encuestas.sse_encuestas encp
-                join encuestas.sse_reglas_evaluacion regep on  regep.reglas_evaluacion_cve = encp.reglas_evaluacion_cve and regep.rol_evaluador_cve = "mdl_role"."id" and regep.rol_evaluado_cve = "mdl_rol_evaluado"."id"
-                join encuestas.sse_result_evaluacion_encuesta_curso reecp on reecp.encuesta_cve = encp.encuesta_cve and (reecp.group_id = 0 ) AND encp.encuesta_cve = "sse_encuesta_curso"."encuesta_cve" AND reecp.course_cve ="encuestas"."sse_encuesta_curso"."course_cve" 
-                where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id" 
-                ) as calificacion_bono'*/
+            /* , '(select reecp.calif_emitida
+              from encuestas.sse_encuestas encp
+              join encuestas.sse_reglas_evaluacion regep on  regep.reglas_evaluacion_cve = encp.reglas_evaluacion_cve and regep.rol_evaluador_cve = "mdl_role"."id" and regep.rol_evaluado_cve = "mdl_rol_evaluado"."id"
+              join encuestas.sse_result_evaluacion_encuesta_curso reecp on reecp.encuesta_cve = encp.encuesta_cve and (reecp.group_id = 0 ) AND encp.encuesta_cve = "sse_encuesta_curso"."encuesta_cve" AND reecp.course_cve ="encuestas"."sse_encuesta_curso"."course_cve"
+              where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id"
+              ) as calificacion_bono' */
             , "'' calificacion_bono"
             , "'No aplica' as bloque"
             , "'' fecha_evaluacion"
         );
+        if ($this->obtener_encuestas_validas) {
+            $array[] = $this->get_select_encuesta_valida();
+        }
+        return $array;
     }
 
     private function get_from_CNC_N_NT() {//Select basico no tutorizado con normativo
@@ -605,6 +649,9 @@ class Reporte_encuestas_contestadas extends CI_Model {
         }
         $this->db->where_in('"encuestas"."sse_reglas_evaluacion"."reglas_evaluacion_cve"', 14);
         $this->db->where('"mdl_course_config".tutorizado', 0);
+        if ($this->filtrar_encuestas_validas) {//Aplica filtro para descartar las encuestas que no son validas
+            $this->db->where($this->get_where_encuesta_valida()); //Para descartar las encuestas que no son validas
+        }
     }
 
     private function get_join_CNC_N_NT() {//Select basico tutorizado
@@ -634,6 +681,78 @@ class Reporte_encuestas_contestadas extends CI_Model {
 
     private function get_groupby_CNC_N_NT() {//Select basico tutorizado
         return null;
+    }
+
+    /**
+     * @author LEAS
+     * @date 12/03/2019
+     * @param type $is_tutorizados_contestadas, es la condición que aplica para 
+     * descartar encuestas que no son validas
+     * @return string con la condición que valida si la encuesta debe o no ser tomada encuenta
+     */
+    private function get_where_encuesta_valida($is_tutorizados_contestadas = FALSE) {
+        if ($is_tutorizados_contestadas) {
+            $condicion = '(select case when count(*) > 0 then 1 else 0 end
+                        FROM mdl_course a
+                        JOIN public.mdl_course_config b ON b.course=a.id 
+                        JOIN public.mdl_course_categories c ON c.id = a.category
+                        JOIN mdl_context d ON d.instanceid = a.id
+                        JOIN mdl_role_assignments e ON e.contextid = d.id 
+                        JOIN mdl_user f ON f.id = e.userid
+                        where a.id = ec.course_cve 
+                                and  f.id = uedo.id 
+                                and e.roleid = mrdo.id
+                        )= 1';
+        } else {
+            $condicion = '(select case when count(*) > 0 then 1 else 0 end
+                    FROM mdl_course a
+                    JOIN public.mdl_course_config b ON b.course=a.id 
+                    JOIN public.mdl_course_categories c ON c.id = a.category
+                    JOIN mdl_context d ON d.instanceid = a.id
+                    JOIN mdl_role_assignments e ON e.contextid = d.id 
+                    JOIN mdl_user f ON f.id = e.userid
+                    where a.id = "mdl_course"."id" 
+                            and  f.id = "mdl_user_evaluado"."id" 
+                            and e.roleid = "mdl_rol_evaluado"."id"
+                    ) = 1';
+        }
+        return $condicion;
+    }
+
+    /**
+     * @author LEAS
+     * @date 12/03/2019
+     * @param type $is_tutorizados_contestadas, es la condición que aplica para 
+     * descartar encuestas que no son validas
+     * @return string con la condición que valida si la encuesta debe o no ser tomada encuenta
+     */
+    private function get_select_encuesta_valida($is_tutorizados_contestadas = FALSE) {
+        if ($is_tutorizados_contestadas) {
+            $condicion = '(select case when count(*) > 0 then 1 else 2 end
+                        FROM mdl_course a
+                        JOIN public.mdl_course_config b ON b.course=a.id 
+                        JOIN public.mdl_course_categories c ON c.id = a.category
+                        JOIN mdl_context d ON d.instanceid = a.id
+                        JOIN mdl_role_assignments e ON e.contextid = d.id 
+                        JOIN mdl_user f ON f.id = e.userid
+                        where a.id = ec.course_cve 
+                                and  f.id = uedo.id 
+                                and e.roleid = mrdo.id
+                        ) encuesta_valida';
+        } else {
+            $condicion = '(select case when count(*) > 0 then 1 else 2 end
+                    FROM mdl_course a
+                    JOIN public.mdl_course_config b ON b.course=a.id 
+                    JOIN public.mdl_course_categories c ON c.id = a.category
+                    JOIN mdl_context d ON d.instanceid = a.id
+                    JOIN mdl_role_assignments e ON e.contextid = d.id 
+                    JOIN mdl_user f ON f.id = e.userid
+                    where a.id = "mdl_course"."id" 
+                            and  f.id = "mdl_user_evaluado"."id" 
+                            and e.roleid = "mdl_rol_evaluado"."id"
+                    ) encuesta_valida';
+        }
+        return $condicion;
     }
 
 }
