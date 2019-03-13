@@ -35,7 +35,8 @@ $(document).ready(function () {
 
 function formato_fecha(fecha) {
     var fechaTmp = new Date(fecha);
-    var options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric"};
+//    var options = {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: "numeric", minute: "numeric"};
+    var options = {day: 'numeric', month: 'numeric', year: 'numeric', hour: "numeric", minute: "numeric"};
 //    return  fechaTmp.toLocaleDateString("es-ES", options);
     return  fechaTmp.toLocaleTimeString("es-ES", options);
 }
@@ -158,7 +159,7 @@ function grid_reporte_encuestas(curso) {
         },
         fields: [
             {name: "contestada", title: name_fields.contestada, type: "select", items: {0: 'Seleccionar', 2: "No contestada", 1: "Contestada"}, inserting: false, editing: false},
-            {name: "encuesta_valida", title: name_fields.encuesta_valida, type: "select", items: {0: 'Seleccionar', 1: "Valida", 2: "No valida"}, inserting: false, editing: false},
+            {name: "encuesta_valida", title: name_fields.encuesta_valida, type: "select", items: {1: "Valida", 2: "No valida", 3: 'Todas'}, inserting: false, editing: false},
             {name: "descripcion_encuestas", title: name_fields.descripcion_encuestas, type: "text", inserting: false, editing: false},
             {name: "names_grupos", title: name_fields.names_grupos, type: "text", inserting: false, editing: false},
             {name: "bloque", title: name_fields.bloque, type: "text", inserting: false, editing: false},

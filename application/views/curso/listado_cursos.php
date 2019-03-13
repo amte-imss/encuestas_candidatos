@@ -60,7 +60,7 @@ $check_no = '<h4><span class="glyphicon glyphicon-remove" aria-hidden="true" sty
                     }else{
                         echo 'NA';
                     }
-                    echo '<td ><span class="input-sm" data-placement="left" data-toggle="tooltip" title   data-original-title="'.$val['encuestas_des'].'">'. $val['clave_encuestas']. '</span></td >';
+                    echo '<td ><p data-placement="left" data-toggle="tooltip" title   data-original-title="'.$val['encuestas_des'].'">'. $val['clave_encuestas']. '</p></td >';
 //                    echo '<td ><span data-placement="left" data-toggle="popover" title  data-trigger="click hover" data-content="'.$val['encuestas_des'].'">'. $val['clave_encuestas']. '</span></td >';
                     echo '</td><td>
                         <a href="'.site_url('curso/info_curso/'.$val['cur_id']).'" class="btn btn-info btn-block">
