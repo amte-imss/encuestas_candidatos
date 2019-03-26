@@ -160,7 +160,7 @@ function grid_reporte_encuestas(curso) {
         fields: [
             {name: "contestada", title: name_fields.contestada, type: "select", items: {0: 'Seleccionar', 2: "No contestada", 1: "Contestada"}, inserting: false, editing: false},
             {name: "encuesta_valida", title: name_fields.encuesta_valida, type: "select", items: {1: "Valida", 2: "No valida", 3: 'Todas'}, inserting: false, editing: false},
-            {name: "descripcion_encuestas", title: name_fields.descripcion_encuestas, type: "text", inserting: false, editing: false},
+            {name: "descripcion_encuestas", title: name_fields.descripcion_encuestas, type: "text", inserting: false, editing: false,width:175},
             {name: "names_grupos", title: name_fields.names_grupos, type: "text", inserting: false, editing: false},
             {name: "bloque", title: name_fields.bloque, type: "text", inserting: false, editing: false},
             {name: "rol_evaluador", title: name_fields.rol_evaluador, type: "text", inserting: false, editing: false},
