@@ -66,6 +66,23 @@ if (isset($logueado) && !empty($logueado)) {
                             </ul>
                         </li>
                     <?php } ?>
+                    <?php if (isset($secciones_acceso[En_modulos::CANDIDATOS])) { ?>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">Candidatos nominativos
+                                <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <?php
+                                foreach ($modulos as $value_hijos) {
+                                    if (En_modulos::CANDIDATOS == $value_hijos['padre'] and $value_hijos['is_menu'] == 1  && $value_hijos['activo'] == 1) {
+                                        ?>
+                                        <li><a href="<?php echo site_url($value_hijos['url']); ?>" class="a_menu"><?php echo $value_hijos['nombre'] ?></a></li>
+                                        <?php
+                                    }
+                                }
+                                ?>
+                            </ul>
+                        </li>
+                    <?php } ?>
                     <?php if (isset($secciones_acceso[En_modulos::ADMINISTRACION])) { ?>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">Catálogos

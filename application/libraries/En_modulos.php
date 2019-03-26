@@ -10,6 +10,7 @@ class En_modulos {
             IMPLEMENTACIONES = 4,
             REPORTES = 5,//módulo
             ENCUESTAS = 6,//módulo
+            CANDIDATOS = 71,//módulo
 //            EVALUACION_ENCUESTAS = 'Evaluación encuestas',//módulo
             
             EDITAR_INSTRUMENTO = 'edit',//hijo 3

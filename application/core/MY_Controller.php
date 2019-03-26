@@ -9,18 +9,15 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * */
 class MY_Controller extends CI_Controller {
 
-
-
     function __construct() {
         parent::__construct();
         //definir un estandar para los archivos de lenguaje
         //$string_values = $this->lang->line('interface');
     }
 
-    protected function get_modulos_habilitados(){
+    protected function get_modulos_habilitados() {
         return $this->acceso->get_modulos_sistema();
     }
-
 
     /*
       Explicación $\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])(?=\S*[\W])\S*$
@@ -90,6 +87,106 @@ class MY_Controller extends CI_Controller {
     public function redirecciona_moodle() {
         $url_moodle = $this->config->item('url_moodle_logout');
         redirect($url_moodle);
+    }
+
+    /**
+     *
+     * @param array $columnas Nombre de las columnas en el archivo
+     * @param type $informacion Array con Datos de la exportación
+     * @param type $column_unset
+     * @param type $orden_columna Orden de las columnas
+     * @param type $file_name Nombre del archivo exportado
+     * @param type $delimiter delimitador del csv, por default será ","
+     * @return type Descriptión documento a exportado ceon extención csv
+     */
+    protected function exportar_csv($columnas = null, $informacion = null, $column_unset = null, $orden_columna = null, $file_name = 'tmp_file_export_data', $delimiter = ',') {//$id_ciclo_evaluacion,$status,$filename
+        header("Content-Encoding: UTF-8");
+        header("Content-type: application/csv;charset=UTF-8");
+        header('Content-Disposition: attachment; filename="' . $file_name . '.csv";');
+
+        $f = fopen('php://output', 'w');
+
+        fputs($f, $bom = ( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
+        fputcsv($f, $columnas, $delimiter);
+
+        //pr($info);
+        if (!is_null($informacion)) {
+            if (!is_null($orden_columna)) {
+                foreach ($informacion as $line) {
+
+                    $column = [];
+                    foreach ($orden_columna as $genera) {//Recorre las columnas extra que no se imprimen
+                        if (isset($line[$genera])) {
+                            $column[] = $line[$genera]; //Elimina colunas extra
+                        } else {
+                            $column[] = ' '; //Elimina colunas extra
+                        }
+                    }
+                    fputcsv($f, $column, $delimiter);
+                }
+            } else {
+                foreach ($informacion as $line) {
+                    if (!is_null($column_unset)) {
+
+                        foreach ($column_unset as $val_unset) {//Recorre las columnas extra que no se imprimen
+                            unset($line[$val_unset]);
+                        }
+                    }
+                    fputcsv($f, $line, $delimiter);
+                }
+            }
+        }
+        fclose($f);
+    }
+    
+    /**
+     *
+     * @param array $columnas Nombre de las columnas en el archivo
+     * @param type $informacion Array con Datos de la exportación
+     * @param type $column_unset
+     * @param type $orden_columna Orden de las columnas
+     * @param type $file_name Nombre del archivo exportado
+     * @param type $delimiter delimitador del csv, por default será ","
+     * @return type Descriptión documento a exportado ceon extención csv
+     */
+    protected function exportar_xls($columnas = null, $informacion = null, $column_unset = null, $orden_columna = null, $file_name = 'tmp_file_export_data', $delimiter = ',') {//$id_ciclo_evaluacion,$status,$filename
+        header("Content-Encoding: UTF-8");
+        header("Content-type: application/x-msexcel;charset=UTF-8");
+        header('Content-Disposition: attachment; filename="' . $file_name . '.xls";');
+
+        $f = fopen('php://output', 'w');
+
+        fputs($f, $bom = ( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
+        fputcsv($f, $columnas, $delimiter);
+
+        //pr($info);
+        if (!is_null($informacion)) {
+            if (!is_null($orden_columna)) {
+                foreach ($informacion as $line) {
+
+                    $column = [];
+                    foreach ($orden_columna as $genera) {//Recorre las columnas extra que no se imprimen
+                        if (isset($line[$genera])) {
+                            $column[] = $line[$genera]; //Elimina colunas extra
+                        } else {
+                            $column[] = ' '; //Elimina colunas extra
+                        }
+                    }
+                    fputcsv($f, $column, $delimiter);
+                }
+            } else {
+                foreach ($informacion as $line) {
+                    if (!is_null($column_unset)) {
+
+                        foreach ($column_unset as $val_unset) {//Recorre las columnas extra que no se imprimen
+                            unset($line[$val_unset]);
+                        }
+                    }
+                    fputcsv($f, $line, $delimiter);
+                }
+            }
+        }
+        fclose($f);
     }
 
 }

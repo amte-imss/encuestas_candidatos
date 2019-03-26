@@ -16,7 +16,7 @@
 
 				<div>
 					<?php 	echo form_open_multipart('encuestas/cargar_instrumento');?> 
-						    <input type="file" name="userfile"><br>
+						    <input type="file" name="userfile" ><br>
 						    <input type="submit" name="submit" value="Cargar instrumentos" class="btn btn-moodle">
 					<?php 	echo form_close(); ?>
 
