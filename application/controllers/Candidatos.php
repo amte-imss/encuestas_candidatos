@@ -9,7 +9,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @date        : 12/03/2019
  */
 class Candidatos extends MY_Controller {
-    const name_tipo_carga = 'tipo_carga_sied', name_curso_registro_id = 'cursos_registro', name_clave_curso = 'cve_curso';  
+
+    const name_tipo_carga = 'tipo_carga_sied', name_curso_registro_id = 'cursos_registro', name_clave_curso = 'cve_curso';
+
     /**
      * * Carga de clases para el acceso a base de datos y para la creación de elementos del formulario
      * * @access 		: public
@@ -35,7 +37,6 @@ class Candidatos extends MY_Controller {
                 pr('$tmp');
                 pr($tmp);
                 pr($data);
-                $data['grid_candidatos'] = $this->load->view('candidatos_cursos/grid_candidatos.php', $data, true);
                 $view = $this->load->view('candidatos_cursos/control_cargas.php', $data, true);
             }
             echo $view;
@@ -43,12 +44,16 @@ class Candidatos extends MY_Controller {
             $param = null;
 //            $param['where'] = ['cve_tipo_carga_candidatos'=>['typeWhere'=>'where_not_in', 'valueWhere'=>['3']]];//Aplica condiciones para omitir opciones, aplica para delegacionales y UMASE
             $tipo_carga = $this->ccc->get_calogo_tipo_cargas($param)['data'];
-            $data['tipo_carga'] = dropdown_options($tipo_carga,"cve_tipo_carga_candidatos", "descripcion");//Catalogo de tipo de carga
+            $data['tipo_carga'] = dropdown_options($tipo_carga, "cve_tipo_carga_candidatos", "descripcion"); //Catalogo de tipo de carga
             $data['cursos_registro'] = dropdown_options($this->ccc->getLista_cursos(), Candidatos_cursos_control::ID_CURSO, Candidatos_cursos_control::NOMBRE_CURSO);
             $data['cursos_registro'] = dropdown_options($this->ccc->getLista_cursos(), Candidatos_cursos_control::ID_CURSO, Candidatos_cursos_control::NOMBRE_CURSO);
-            
-            $data['btn_delegaciones'] = $this->load->view('candidatos_cursos/descarga_catalogo_delegaciones.php', $data, true);//Boton para descargar catalogo de delegaciones
-            $data['btn_candidatos_formato'] = $this->load->view('candidatos_cursos/descarga_formato_candidatos_carga.php', $data, true);//Boton para descaragr formato de caraga de candidatos a cursos
+
+            $data['btn_delegaciones'] = $this->load->view('candidatos_cursos/descarga_catalogo_delegaciones.php', $data, true); //Boton para descargar catalogo de delegaciones
+            $data['btn_candidatos_formato'] = $this->load->view('candidatos_cursos/descarga_formato_candidatos_carga.php', $data, true); //Boton para descaragr formato de caraga de candidatos a cursos
+            $data_grid['delegaciones'] = json_encode($this->ccc->get_calogo_delegaciones()['data']);
+            $data_grid['tipo_cargas'] = json_encode($this->ccc->get_calogo_tipo_cargas()['data']);
+//            pr($data_grid);
+            $data['grid_candidatos'] = $this->load->view('candidatos_cursos/grid_candidatos.php', $data_grid, true);//Para grid de candidatos
 //            
             $registro_candidato = $this->load->view('candidatos_cursos/registro_candidatos.php', $data, true);
             $this->template->setMainTitle('Candidatos nominativos');
@@ -83,8 +88,14 @@ class Candidatos extends MY_Controller {
         }
     }
 
-    public function listado_candidatos() {
-        
+    public function lista_candidatos($id_curso) {
+        $this->load->library("Candidatos_cursos_control", null, "ccc");
+        $this->ccc->setCurso_id($id_curso); //Asigna el curso y la validación correspondiente a numeric y not null
+        $result = $this->ccc->get_candidatos_implementacion();
+        unset($result["header"]);
+        header('Content-Type: application/json;charset=utf-8');
+//        echo json_encode($result, JSON_NUMERIC_CHECK);
+        echo json_encode($result);
     }
 
     public function generar_formato_sied() {
@@ -119,27 +130,26 @@ class Candidatos extends MY_Controller {
         }
         return $output;
     }
-    
+
     /**
      * Descargar catálogo de delegaciones 
      */
-    public function get_delegaciones(){
+    public function get_delegaciones() {
         $this->load->library("Candidatos_cursos_control", null, "ccc");
         $result = $this->ccc->get_calogo_delegaciones();
         $filename = 'catalogo_delegaciones';
 //        pr($result);
-        $this->exportar_csv($result['header'], $result['data'], null, null, $filename);//Exportar el formato
-        
+        $this->exportar_csv($result['header'], $result['data'], null, null, $filename); //Exportar el formato
     }
-    
+
     /**
      * Descargar formato de candidatos 
      */
-    public function get_formato_candidatos_csv(){
+    public function get_formato_candidatos_csv() {
         $this->load->library("Candidatos_cursos_control", null, "ccc");
         $result = $this->ccc->get_formato_candidatos_csv();
         $filename = 'formato_carga_candidatos';
-        $this->exportar_csv($result['headers'],null, null, null, $filename);//Exportar el formato
+        $this->exportar_csv($result['headers'], null, null, null, $filename); //Exportar el formato
     }
 
 }

@@ -84,6 +84,22 @@ class Candidatos_cursos_control {
         return $array_result;
     }
 
+    public function get_candidatos_implementacion() {
+        $result = [];
+        if (!is_null($this->getCurso_id())) {
+
+            $select = ["ct.id_candidato", "ct.id_curso", "ct.matricula", "ct.nom", "ct.ap", "ct.am","curp",
+                "ct.email_principal", "ct.emal_otro", "ct.cve_tipo_carga_candidatos",
+                "ct.cve_delegacion", "ct.cve_categoria", "categoria", "ct.cve_departamental",
+                "ct.departamental", "ct.valido", "cve_tipo_carga_candidatos"];
+            $order_by = 'cve_delegacion';
+            $where = ["ct.id_curso" => $this->getCurso_id()];
+            $result['data'] = $this->CI->cand->getConsutasGenerales("encuestas.ssc_candidatos ct", $select, $where, null, $order_by);
+            $result['header'] = $select;
+        }
+        return $result;
+    }
+
     /**
      * 
      * @return type Catalogo de delegaciones
@@ -114,7 +130,9 @@ class Candidatos_cursos_control {
     }
 
     function setCurso_id($curso_id) {
-        $this->curso_id = $curso_id;
+        if (!is_null($curso_id) && is_numeric($curso_id)) {//Valida que sea numerico
+            $this->curso_id = $curso_id;
+        }
     }
 
     function getDetalle_candidatos() {
@@ -147,8 +165,6 @@ class Candidatos_cursos_control {
         }
         return $this->res_validacion;
     }
-    
-    
 
     public function busqueda_sied($array_candidatos) {
 //        $this->CI->cand->get_usuarios_sied($array_matriculas);

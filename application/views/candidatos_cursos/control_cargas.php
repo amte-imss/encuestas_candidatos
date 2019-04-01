@@ -18,15 +18,5 @@
     <!--<input type="file" name="candidatosfile" accept=".csv"><br>-->
     <input type="button" name="button" value="Cargar candidatos" class="btn btn-moodle" onclick="cargar_candidatoscsv();">
 </div>
-<?php
-if (isset($grid_candidatos)) {
-    ?>
-    <div class="row">
-        <div class="col-lg-12 col-sm-12 col-md-12 control_cursos_registro">
-            <?php echo $grid_candidatos; ?> 
-        </div>
-    </div>
-<?php
-} 
 
 

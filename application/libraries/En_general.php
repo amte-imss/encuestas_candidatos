@@ -8,6 +8,7 @@ class En_general {
             SUCCESS = 'success',
             WARNING = 'warning',
             INFO = 'info'
+            
     ;
 
 }

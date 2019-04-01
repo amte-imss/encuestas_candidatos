@@ -1,6 +1,6 @@
 <?php
 
-if (!defined('BASEPATH')){
+if (!defined('BASEPATH')) {
     exit('No direct script access allowed');
 }
 
@@ -15,7 +15,6 @@ $config = array(
             'field' => 'pregunta',
             'label' => 'Pregunta',
             'rules' => 'required|max_length[500]|alpha_numeric_accent_space_dot_double_quot' //se cambia de 250 a 500 caracteres
-
         ),
         array(
             'field' => 'is_bono',
@@ -74,7 +73,6 @@ $config = array(
             'label' => 'NOMBRE_SECCION',
             'rules' => 'required|alpha_numeric_accent_space_dot_double_quot'
         ),
-
         array(
             'field' => 'NOMBRE_INDICADOR',
             'label' => 'NOMBRE_INDICADOR',
@@ -120,7 +118,6 @@ $config = array(
             'label' => 'VALIDO_NO_APLICA',
             'rules' => 'in_list[SI,NO,Si,No,si,no]|alpha'
         ),
-
         array(
             'field' => 'NO_ENVIO_MENSAJE',
             'label' => 'NO_ENVIO_MENSAJE',
@@ -176,7 +173,6 @@ $config = array(
             'label' => 'EVA_TIPO',
             'rules' => 'required|in_list[POR_BLOQUE,POR_GRUPO,POR_USUARIO]'
         ),
-
     ),
     'edita_instrumento' => array(
         array(
@@ -235,7 +231,6 @@ $config = array(
             'field' => 'pregunta',
             'label' => 'Pregunta',
             'rules' => 'required|alpha_numeric_accent_space_dot_double_quot'
-
         ),
     ),
     'inicio_sesion' => array(
@@ -255,7 +250,18 @@ $config = array(
             'rules' => 'required|check_captcha'
         ),
     ),
-
+    'cargar_candidatos_csv' => array(
+        array(
+            'field' => 'id_c',
+            'label' => 'Curso',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'candidatosfile',
+            'label' => 'Archivo CSV',
+            'rules' => 'required'
+        ),
+    ),
 );
 
 /*

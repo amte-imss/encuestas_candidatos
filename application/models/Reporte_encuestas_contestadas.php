@@ -522,7 +522,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
                 from encuestas.sse_encuestas encp
                 join encuestas.sse_reglas_evaluacion regep on  regep.reglas_evaluacion_cve = encp.reglas_evaluacion_cve and regep.rol_evaluador_cve = "mdl_role"."id" and regep.rol_evaluado_cve = "mdl_rol_evaluado"."id"
                 join encuestas.sse_result_evaluacion_encuesta_curso reecp on reecp.encuesta_cve = encp.encuesta_cve and (reecp.group_id = "gm"."groupid" ) AND encp.encuesta_cve = "sse_encuesta_curso"."encuesta_cve" AND reecp.course_cve ="encuestas"."sse_encuesta_curso"."course_cve" 
-                where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id" 
+                where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id" limit 1 
                 ) as calificacion'
             /* , '(select reecp.calif_emitida
               from encuestas.sse_encuestas encp
@@ -621,7 +621,7 @@ class Reporte_encuestas_contestadas extends CI_Model {
                 from encuestas.sse_encuestas encp
                 join encuestas.sse_reglas_evaluacion regep on  regep.reglas_evaluacion_cve = encp.reglas_evaluacion_cve and regep.rol_evaluador_cve = "mdl_role"."id" and regep.rol_evaluado_cve = "mdl_rol_evaluado"."id"
                 join encuestas.sse_result_evaluacion_encuesta_curso reecp on reecp.encuesta_cve = encp.encuesta_cve and (reecp.group_id =0) AND encp.encuesta_cve = "sse_encuesta_curso"."encuesta_cve" AND reecp.course_cve ="encuestas"."sse_encuesta_curso"."course_cve" 
-                where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id" 
+                where reecp.evaluado_user_cve = "tutorias"."mdl_userexp"."userid" and reecp.evaluador_user_cve = "mdl_user"."id" limit 1
                 ) as calificacion'
             /* , '(select reecp.calif_emitida
               from encuestas.sse_encuestas encp
