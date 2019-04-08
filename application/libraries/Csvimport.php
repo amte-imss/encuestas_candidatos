@@ -108,7 +108,6 @@ class Csvimport {
             // If column headers provided, set them
             $this->_set_column_headers($column_headers);
         }
-
         // Open the CSV for reading
         $this->_get_handle();
 
@@ -116,6 +115,8 @@ class Csvimport {
 
         while (($data = fgetcsv($this->handle, 0, $this->delimiter)) !== FALSE)
         {
+//        pr($row);
+//        pr($column_headers);
             if($row < $this->initial_line)
             {
                 $row++;
@@ -139,11 +140,14 @@ class Csvimport {
                     {
                         $column_headers[$key] = trim($value);
                     }
+                    $this->column_headers = $column_headers;
                 }
             }
             else
             {
                 $new_row = $row - $this->initial_line - 1; // needed so that the returned array starts at 0 instead of 1
+//                  pr('$column_headers ');
+//                    pr($column_headers );
                 foreach($column_headers as $key => $value) // assumes there are as many columns as their are title columns
                 {
                     $result[$new_row][$value] = utf8_encode(trim($data[$key]));
@@ -347,7 +351,7 @@ class Csvimport {
      * @access  private
      * @return  mixed
      */
-    private function _get_column_headers()
+    public function _get_column_headers()
     {
         return $this->column_headers;
     }

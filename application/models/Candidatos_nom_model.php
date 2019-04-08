@@ -43,7 +43,7 @@ class Candidatos_nom_model extends CI_Model {
     }
 
     public function get_usuarios_sied($matriculas = null) {
-        if (is_null($matriculas) and ! empty($matriculas)) {
+        if (is_null($matriculas) || empty($matriculas)) {
             return [];
         }
         $this->db->flush_cache(); //Limpia cache
@@ -77,7 +77,7 @@ class Candidatos_nom_model extends CI_Model {
 //        pr($this->db->last_query());
         return $query;
     }
-    
+
     /**
      * 
      * @param type $entidad Nombre de la tabla principal

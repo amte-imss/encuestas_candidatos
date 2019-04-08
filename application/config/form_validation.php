@@ -252,6 +252,79 @@ $config = array(
     ),
     'cargar_candidatos_csv' => array(
         array(
+            'field' => 'cursos_registro',
+            'label' => 'Curso',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'candidatosfile',
+            'label' => 'Archivo CSV',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'tipo_carga_sied',
+            'label' => 'Tipo carga SIED',
+            'rules' => 'required'
+        ),
+    ),
+    'columnas_csv_candidatos_imss' => array(
+        array(
+            'field' => 'MATRICULA',
+            'label' => 'Matrícula',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'CORREO_ELECTRONICO_PRINCIPAL',
+            'label' => 'Correo electrónico',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'CVE_DELEGACION',
+            'label' => 'Delegación',
+            'rules' => 'required'
+        ),
+    ),
+    'columnas_csv_candidatos_externos' => array(
+        array(
+            'field' => 'MATRICULA',
+            'label' => 'Matrícula(Identificador)',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'NOMBRE',
+            'label' => 'Nombre del candidato',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'PATERNO',
+            'label' => 'Apellido paterno',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'CURP',
+            'label' => 'Curp',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'CORREO_ELECTRONICO_PRINCIPAL',
+            'label' => 'Correo electrónico',
+            'rules' => 'required'
+        ),
+    ),
+    'datos_csv_internos' => array(
+        array(
+            'field' => 'id_c',
+            'label' => 'Curso',
+            'rules' => 'required'
+        ),
+        array(
+            'field' => 'candidatosfile',
+            'label' => 'Archivo CSV',
+            'rules' => 'required'
+        ),
+    ),
+    'datos_csv_externos' => array(
+        array(
             'field' => 'id_c',
             'label' => 'Curso',
             'rules' => 'required'

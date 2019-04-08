@@ -1,3 +1,4 @@
+BEGIN TRANSACTION ;
 INSERT INTO encuestas.sse_modulo (descripcion_modulo, nom_controlador_funcion_mod, modulo_padre_cve, is_menu) values 
 ('Candidatos nominativos', '/', null, 1);
 
@@ -56,7 +57,7 @@ insert into encuestas.ssc_tipos_carga_candidatos_curso (cve_tipo_carga_candidato
 	('9','Inscrito nominativo')
 ;
 
-alter table "encuestas"."ssc_candidatos" add column "curp" varchar(20) NULL; 
+ 
 /*Tabla de información de candidatos*/
 CREATE TABLE "encuestas"."ssc_candidatos" (
 "id_candidato" serial8 NOT NULL,
@@ -85,3 +86,6 @@ PRIMARY KEY ("id_candidato")
 );
 
 ALTER TABLE "encuestas"."ssc_candidatos" ADD CONSTRAINT "fk_tipo_carga_candidatos" FOREIGN KEY ("cve_tipo_carga_candidatos") REFERENCES "encuestas"."ssc_tipos_carga_candidatos_curso" ("cve_tipo_carga_candidatos");
+
+
+COMMIT TRANSACTION;
