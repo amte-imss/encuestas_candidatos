@@ -28,6 +28,7 @@ class Candidatos extends MY_Controller {
 
     public function cargar_candidatos($curso = null) {
         $this->load->library("Candidatos_cursos_control", null, "ccc");
+        $this->ccc->setUser_sesion_id($this->get_datos_sesion('id')); //Guarda id del usuario de la sesion
 //        $candidatos = new Candidatos();
         if ($this->input->is_ajax_request()) {//Valida que la petición sea po AJAX
             $this->ccc->setCurso_id($curso);
@@ -36,9 +37,10 @@ class Candidatos extends MY_Controller {
                 $view = 'Error';
             } else {
                 $tmp = $this->ccc->busqueda_sied(null);
-                pr('$tmp');
-                pr($tmp);
-                pr($data);
+//                pr('$tmp');
+//                pr($tmp);
+//                pr($data);
+                $data['detalle_curso'] = $this->load->view('candidatos_cursos/detalle_curso.php', $data, true);
                 $view = $this->load->view('candidatos_cursos/control_cargas.php', $data, true);
             }
             echo $view;
@@ -69,6 +71,7 @@ class Candidatos extends MY_Controller {
         if ($this->input->post()) {     // SI EXISTE UN ARCHIVO EN POS
             $post['candidatosfile'] = $_FILES['candidatosfile']['name'];
             $this->load->library("Candidatos_cursos_control", null, "ccc");
+            $this->ccc->setUser_sesion_id($this->get_datos_sesion('id')); //Guarda id del usuario de la sesion
             $this->ccc->setCurso_id($this->input->post(Candidatos::name_curso_registro_id, true)); //Asigna el id del curso
             $this->ccc->setTmp_csv($this->carga_csv_datos('candidatosfile')); //Lee información del archivo CSV y asigana el array a una variable de la biblioteca
 //            pr($this->ccc->getTmp_csv());
@@ -104,18 +107,27 @@ class Candidatos extends MY_Controller {
             $file_path = './uploads/' . $file_data['file_name'];         // CARGAMOS LA URL DEL ARCHIVO
 //            $output['headers'] = $this->ccc->get_formato_candidatos_csv()['headers'];
             $csv_array = $this->csvimport->get_array($file_path);   //SI EXISTEN DATOS, LOS CARGAMOS EN LA VARIABLE
-            $output[Candidatos_cursos_control::CSVRESULT_HEADER] = $this->csvimport->_get_column_headers();//
+            $output[Candidatos_cursos_control::CSVRESULT_HEADER] = $this->csvimport->_get_column_headers(); //
             $output[Candidatos_cursos_control::CSVRESULT_STATUS] = TRUE;
             $output[Candidatos_cursos_control::CSVRESULT_DATA] = $csv_array;
             unlink($file_path);
         }
         return $output;
     }
-    
+
+    public function lista_candidatos($id_curso) {
+        $this->load->library("Candidatos_cursos_control", null, "ccc");
+        $this->ccc->setCurso_id($id_curso); //Asigna el curso y la validación correspondiente a numeric y not null
+        $result = $this->ccc->get_candidatos_implementacion();
+        unset($result["header"]);
+        header('Content-Type: application/json;charset=utf-8');
+//        echo json_encode($result, JSON_NUMERIC_CHECK);
+        echo json_encode($result);
+    }
+
     public function generar_formato_sied() {
         
     }
-
 
     /**
      * Descargar catálogo de delegaciones 

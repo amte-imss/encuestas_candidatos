@@ -1,5 +1,10 @@
 <?php echo js("candidatos_curso/candidatos.js"); ?>
 
+<?php
+    if(isset($detalle_curso)){
+        echo $detalle_curso;
+    }
+?>
 
 <div class="col-lg-6 col-sm-6 col-md-6 custom-file control_cursos_registro">
     <div id='error_file' class="alert alert-danger" style="display: none" >

@@ -16,12 +16,116 @@ $(document).ready(function () {
 //        }
 //    }
 });
+function grid_candidatos_(curso_id, nameGrid) {
+    var name_fields = get_header_candidatos();
+    grid = $('#' + nameGrid).jsGrid({
+        height: "500px",
+        width: "100%",
+//        deleteConfirm: "¿Deseas eliminar este registro?",
+        filtering: true,
+        inserting: false,
+        editing: false,
+        sorting: false,
+        selecting: false,
+        paging: true,
+        autoload: true,
+        pageSize: 10,
+        rowClick: function (args) {
+            //console.log(args);
+        },
+        pageButtonCount: 5,
+        pagerFormat: "Páginas: {pageIndex} de {pageCount}    {first} {prev} {pages} {next} {last}   Total: {itemCount}",
+        pagePrevText: "Anterior",
+        pageNextText: "Siguiente",
+        pageFirstText: "Primero",
+        pageLastText: "Último",
+        pageNavigatorNextText: "...",
+        pageNavigatorPrevText: "...",
+        noDataContent: "No se encontraron datos",
+        invalidMessage: "",
+        loadMessage: "Por favor espere",
+        onItemUpdating: function (args) {
+        },
+        onItemEditing: function (args) {
+        },
+        cancelEdit: function () {
+        },
+        controller: {
+            loadData: function (filter) {
+                console.log('filter ^^^^^^^^^^^^^^');
+                console.log(filter);
+                var d = $.Deferred();
+                //var result = null;
+
+                $.ajax({
+                    type: "GET",
+                    url: site_url + "/candidatos/lista_candidatos/" + curso_id,
+                    data: filter,
+                    dataType: "json"
+                })
+                        .done(function (result) {
+                            console.log('------------------- Result -----------------');
+                            console.log(result);
+                            var res = $.grep(result.data, function (registro) {
+                                return (!filter.matricula || (registro.matricula !== null && registro.matricula.toLowerCase().indexOf(filter.matricula.toString().toLowerCase()) > -1))
+                                        && (!filter.nom || (registro.nom !== null && registro.nom.toLowerCase().indexOf(filter.nom.toString().toLowerCase()) > -1))
+                                        && (!filter.ap || (registro.ap !== null && registro.ap.toLowerCase().indexOf(filter.ap.toString().toLowerCase()) > -1))
+                                        && (!filter.am || (registro.am !== null && registro.am.toLowerCase().indexOf(filter.am.toString().toLowerCase()) > -1))
+                                        && (!filter.curp || (registro.curp !== null && registro.curp.toLowerCase().indexOf(filter.curp.toString().toLowerCase()) > -1))
+                                        && (!filter.email_principal || (registro.email_principal !== null && registro.email_principal.toLowerCase().indexOf(filter.email_principal.toString().toLowerCase()) > -1))
+                                        && (!filter.emal_otro || (registro.emal_otro !== null && registro.emal_otro.toLowerCase().indexOf(filter.emal_otro.toString().toLowerCase()) > -1))
+                                        && (!filter.cve_categoria || (registro.cve_categoria !== null && registro.cve_categoria.toLowerCase().indexOf(filter.cve_categoria.toString().toLowerCase()) > -1))
+                                        && (!filter.categoria || (registro.categoria !== null && registro.categoria.toLowerCase().indexOf(filter.categoria.toString().toLowerCase()) > -1))
+                                        && (!filter.cve_departamental || (registro.cve_departamental !== null && registro.cve_departamental.toLowerCase().indexOf(filter.cve_departamental.toString().toLowerCase()) > -1))
+                                        && (!filter.departamental || (registro.departamental !== null && registro.departamental.toLowerCase().indexOf(filter.departamental.toString().toLowerCase()) > -1))
+//                                        && (!filter.cve_delegacion || (registro.cve_delegacion != null && registro.cve_delegacion == filter.cve_delegacion))
+                                        ;
+                            });
+//                            d.resolve(result['data']);
+                            d.resolve(res);
+//                            calcula_ancho_grid('jsReporteEncuestas', 'jsgrid-header-cell');
+//                            console.log('------------------- Result -----------------');
+                        }).fail(function (){
+                            console.log('FaaaaaaaaaaaaalllllllllllllllllaaaaaaaaaaaaaaaLEAS');
+                        });
+                return d.promise();
+            },
+            updateItem: function (item) {
+            }
+        },
+        fields: [
+            {type: "control", editButton: false, deleteButton: false,
+                searchModeButtonTooltip: "Cambiar a modo búsqueda", // tooltip of switching filtering/inserting button in inserting mode
+                editButtonTooltip: "Editar", // tooltip of edit item button
+                searchButtonTooltip: "Buscar", // tooltip of search button
+                clearFilterButtonTooltip: "Limpiar filtros de búsqueda", // tooltip of clear filter button
+                updateButtonTooltip: "Actualizar", // tooltip of update item button
+                cancelEditButtonTooltip: "Cancelar", // tooltip of cancel editing button
+            },
+            {name: "valido", title: name_fields.valido, type: "checkbox", inserting: true, editing: true},
+            {name: "cve_tipo_carga_candidatos", title: name_fields.cve_tipo_carga_candidatos, type: "select", items: cat_tipo_cargas, valueField: "cve_tipo_carga_candidatos", textField: "descripcion", inserting: true, editing: true},
+            {name: "cve_delegacion", title: name_fields.cve_delegacion, type: "select", items: cat_delegacioes, valueField: "cve_delegacion", textField: "nom_delegacion", inserting: true, editing: true},
+            {name: "matricula", title: name_fields.matricula, type: "text", inserting: true, editing: true},
+            {name: "nom", title: name_fields.nom, type: "text", inserting: true, editing: true},
+            {name: "ap", title: name_fields.ap, type: "text", inserting: true, editing: true},
+            {name: "am", title: name_fields.am, type: "text", inserting: true, editing: true},
+            {name: "curp", title: name_fields.curp, type: "text", inserting: true, editing: true, width: 180},
+            {name: "email_principal", title: name_fields.email_principal, type: "text", inserting: true, editing: true, width: 250},
+            {name: "emal_otro", title: name_fields.emal_otro, type: "text", inserting: false, editing: false, width: 250},
+            {name: "cve_categoria", title: name_fields.cve_categoria, type: "text", inserting: true, editing: true},
+            {name: "categoria", title: name_fields.categoria, type: "text", inserting: true, editing: true, width: 200},
+            {name: "cve_departamental", title: name_fields.cve_departamental, type: "text", inserting: true, editing: true},
+            {name: "departamental", title: name_fields.departamental, type: "text", inserting: true, editing: true, width: 200},
+        ]
+    });
+}
 function grid_candidatos(curso_id, nameGrid) {
 
     var name_fields = get_header_candidatos();
-//    console.log(name_fields);
-    console.log(cat_delegacioes);
-    console.log(cat_tipo_cargas);
+    console.log(name_fields);
+    console.log(nameGrid);
+//    console.log(cat_delegacioes);
+//    console.log(cat_tipo_cargas);
 //    grid = $('#' + nameGrid).html("SAludossssssssssssssssssssssssssssssss");
     grid = $('#' + nameGrid).jsGrid({
         height: "500px",
@@ -55,7 +159,7 @@ function grid_candidatos(curso_id, nameGrid) {
             var deferred = $.Deferred();
             var result = $.ajax({
                 type: "POST",
-                url: site_url + "/candidatos/insertar/" ,
+                url: site_url + "/candidatos/insertar/",
                 data: item
             }).done(function (resp) {
                 console.log(resp);
@@ -74,7 +178,8 @@ function grid_candidatos(curso_id, nameGrid) {
         },
         controller: {
             loadData: function (filter) {
-                //console.log(filter);
+                console.log('filter ^^^^^^^^^^^^^^');
+                console.log(filter);
                 var d = $.Deferred();
                 //var result = null;
 
@@ -85,6 +190,7 @@ function grid_candidatos(curso_id, nameGrid) {
                     dataType: "json"
                 })
                         .done(function (result) {
+                            console.log('------------------- Result -----------------');
                             console.log(result);
                             var res = $.grep(result.data, function (registro) {
 //                                return true;
@@ -120,6 +226,20 @@ function grid_candidatos(curso_id, nameGrid) {
                 updateButtonTooltip: "Actualizar", // tooltip of update item button
                 cancelEditButtonTooltip: "Cancelar", // tooltip of cancel editing button
             },
+            {name: "valido", title: name_fields.valido, type: "checkbox", inserting: true, editing: true},
+            {name: "cve_tipo_carga_candidatos", title: name_fields.cve_tipo_carga_candidatos, type: "select", items: cat_tipo_cargas, valueField: "cve_tipo_carga_candidatos", textField: "descripcion", inserting: true, editing: true},
+            {name: "cve_delegacion", title: name_fields.cve_delegacion, type: "select", items: cat_delegacioes, valueField: "cve_delegacion", textField: "nom_delegacion", inserting: true, editing: true},
+            {name: "matricula", title: name_fields.matricula, type: "text", inserting: true, editing: true},
+            {name: "nom", title: name_fields.nom, type: "text", inserting: true, editing: true},
+            {name: "ap", title: name_fields.ap, type: "text", inserting: true, editing: true},
+            {name: "am", title: name_fields.am, type: "text", inserting: true, editing: true},
+            {name: "curp", title: name_fields.curp, type: "text", inserting: true, editing: true, width: 180},
+            {name: "email_principal", title: name_fields.email_principal, type: "text", inserting: true, editing: true, width: 200},
+            {name: "emal_otro", title: name_fields.emal_otro, type: "text", inserting: false, editing: false, width: 200},
+            {name: "cve_categoria", title: name_fields.cve_categoria, type: "text", inserting: true, editing: true},
+            {name: "categoria", title: name_fields.categoria, type: "text", inserting: true, editing: true, width: 200},
+            {name: "cve_departamental", title: name_fields.cve_departamental, type: "text", inserting: true, editing: true},
+            {name: "departamental", title: name_fields.departamental, type: "text", inserting: true, editing: true, width: 200},
             {name: "valido", title: name_fields.valido, type: "checkbox", inserting: true, editing: true},
             {name: "cve_tipo_carga_candidatos", title: name_fields.cve_tipo_carga_candidatos, type: "select", items: cat_tipo_cargas, valueField: "cve_tipo_carga_candidatos", textField: "descripcion", inserting: true, editing: true},
             {name: "cve_delegacion", title: name_fields.cve_delegacion, type: "select", items: cat_delegacioes, valueField: "cve_delegacion", textField: "nom_delegacion", inserting: true, editing: true},
