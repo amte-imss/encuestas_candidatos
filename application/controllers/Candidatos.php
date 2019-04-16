@@ -33,6 +33,8 @@ class Candidatos extends MY_Controller {
         if ($this->input->is_ajax_request()) {//Valida que la petición sea po AJAX
             $this->ccc->setCurso_id($curso);
             $data['datos_cursos_registro'] = $this->ccc->getDetalle_curso();
+            $this->ccc->
+            exit();
             if (is_null($data['datos_cursos_registro'])) {//Valida que exista información del curso
                 $view = 'Error';
             } else {

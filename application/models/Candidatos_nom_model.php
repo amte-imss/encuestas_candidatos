@@ -15,7 +15,7 @@ class Candidatos_nom_model extends CI_Model {
         $this->db->join('mdl_course_categories ccat', 'ccat.id = e.category');
         if (!is_null($id_curso)) {
             $this->db->where('e.id', $id_curso);
-        $this->db->join('mdl_course_config ccg', 'ccg.course = e.id');
+            $this->db->join('mdl_course_config ccg', 'ccg.course = e.id');
         }
         $this->db->order_by('e.lastdatepre');
         $this->db->order_by('e.shortname');
@@ -39,8 +39,36 @@ class Candidatos_nom_model extends CI_Model {
         return $query;
     }
 
-    function get_candidatos_regstro_curso($clave_curso = null) {
-        
+    /**
+     * 
+     * @param type $clave_implementacion
+     * @param type $fecha_inicio
+     * @param type $fecha_fin
+     */
+    function get_candidatos_registro_curso($id_curso, $matriculas = null, $fecha_inicio = null, $fecha_fin = null) {
+        $this->db->flush_cache(); //Limpia cache
+        $this->db->reset_query(); //Reset result query
+        if(is_null($id_curso)){
+            return null;
+        }
+        if (is_null($fecha_inicio) || is_null($fecha_fin)) {
+            $select = array('mc.shortname', 'mcg.startdatepre', 'mcg.lastdatepre',
+                "to_char(to_timestamp(mc.startdate::double precision), 'YYYY-MM-DD'::text) AS startdate",
+                'mcg.lastdate'
+            );
+            $where = array('mc' => $id_curso);
+            $join = array('mdl_course_config mcg' => array('typejoin'=>'inner', 'condicion'=>'mcg.course = mc.id'));
+            $result = $this->getConsutasGenerales('mdl_course mc', $select, $where, $join);
+            if(empty($result)){
+                return null;
+            }
+            $fecha_inicio = $result[0]['startdatepre'];
+            $fecha_fin = $result[0]['lastdate'];
+        }
+        $select = array('mc.shortname', 'mcg.startdatepre', 'mcg.lastdatepre',
+                "to_char(to_timestamp(mc.startdate::double precision), 'YYYY-MM-DD'::text) AS startdate",
+                'mcg.lastdate'
+            );
     }
 
     public function get_usuarios_sied($matriculas = null) {
@@ -125,7 +153,7 @@ class Candidatos_nom_model extends CI_Model {
 
         $this->db->flush_cache(); //Limpia cache
         $this->db->reset_query(); //Reset result query
-        $select = ['us.username','b.code certificados','shortname'];
+        $select = ['us.username', 'b.code certificados', 'shortname'];
         $this->db->flush_cache(); //Limpia cache
         $this->db->reset_query(); //Reset result query
         $this->db->select($select); //Reset result query
@@ -133,7 +161,7 @@ class Candidatos_nom_model extends CI_Model {
         $this->db->join('cert.ssc_tab_cert_issues_conf c', 'c.cert_issues_id = b.id'); //Reset result query
         $this->db->join('public.mdl_course mc', 'mc.id = a.course'); //Reset result query
         $this->db->join('public.mdl_user us', 'us.id = c.userid'); //Reset result query
-        $this->db->where('substring(mc.shortname from 1 for position(substring(mc.shortname from $$\-\w\d+\-\d+$$) in mc.shortname)-1) = \'' . $clave_curso .'\'', null); //Reset result query
+        $this->db->where('substring(mc.shortname from 1 for position(substring(mc.shortname from $$\-\w\d+\-\d+$$) in mc.shortname)-1) = \'' . $clave_curso . '\'', null); //Reset result query
         $this->db->where_in('us.username', $matriculas); //Reset result query
         $reslult = $this->db->get('public.mdl_customcert a')->result_array();
         return $reslult;
@@ -149,7 +177,7 @@ class Candidatos_nom_model extends CI_Model {
      * Si el where es noramal (typo "and"), entonces, "nameColumn" contentra el valor solicitado (no array ni objeto)
      * posible valor de typeWhere: "or_where_in, where_not_in, where, 
      * @param type $join
-      , array con la siguiente estructura: nameColumn => [typeJoin , condicionesJoin].
+      , array con la siguiente estructura: nametabla => [typejoin , condicion].
      * Si el join es noramal (typo "inner"), entonces, "nameColumn" contentra la condici{on de join     
      * Posible type de join "right and left"
      * @param type $order_by orden[]
@@ -174,6 +202,12 @@ class Candidatos_nom_model extends CI_Model {
 
         if ($distinct) {
             $this->db->distint();
+        }
+
+        if (!is_null($join)) {
+            foreach ($join as $key_join => $value_join) {
+                $this->db->join($key_join, $value_join['condicion'], $value_join['typejoin']);
+            }
         }
 
         $this->db->select($select); //Asigna el select de la consulta 
@@ -230,8 +264,6 @@ class Candidatos_nom_model extends CI_Model {
         }
         return $result;
     }
-    
-    
 
     public function insert_registro_general($entidad, $datos, $texts = [], $identificador = null) {
         $this->db->flush_cache(); //Limpia cache

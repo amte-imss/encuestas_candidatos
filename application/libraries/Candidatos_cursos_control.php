@@ -508,7 +508,7 @@ class Candidatos_cursos_control {
             $result [self::TB_DATOS_PRE_VALIDADOS] = [];
             $result [self::TB_DATOS_PRE_VALIDADOS_ERROR] = [];
             foreach ($result_array[self::TB_DATOS_CSV] as $value) {//Recorre el array de los datos del CSV
-                $this->complementa_datos_candidatos_internos($value[self::MATRICULA], $result_array, $result['datos_pre_validados'], $result['datos_pre_validados_error']);
+                $this->complementa_datos_candidatos_internos($value[self::MATRICULA], $result_array, $result[self::TB_DATOS_PRE_VALIDADOS], $result[self::TB_DATOS_PRE_VALIDADOS_ERROR]);
             }
         }
         return $result;
